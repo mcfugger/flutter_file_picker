@@ -121,122 +121,6 @@ public class FileUtils {
             Log.e(TAG, "Failed to load bytes into memory with error " + e.toString() + ". Probably the file is too big to fit device memory. Bytes won't be added to the file this time.");
         }
     }
-       public static String getFullPathFromContentUri(final Context context, final Uri uri) {
-    
-            final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-    
-            // DocumentProvider
-            if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
-                // ExternalStorageProvider
-                if ("com.android.externalstorage.documents".equals(uri.getAuthority())) {
-                    final String docId = DocumentsContract.getDocumentId(uri);
-                    final String[] split = docId.split(":");
-                    final String type = split[0];
-    
-                    if ("primary".equalsIgnoreCase(type)) {
-                        return Environment.getExternalStorageDirectory() + "/" + split[1];
-                    }//non-primary e.g sd card
-                     else {
-
-                           if (Build.VERSION.SDK_INT > 20) {
-                    //getExternalMediaDirs() added in API 21
-                    File extenal[] = context.getExternalMediaDirs();
-                   for (File f : extenal) {
-                    filePath = f.getAbsolutePath();
-                    if (filePath.contains(type)) {
-                        int endIndex = filePath.indexOf("Android");
-                        filePath = filePath.substring(0, endIndex) + split[1];
-                    }
-                }
-             }else{
-                    filePath = "/storage/" + type + "/" + split[1];
-             }
-            return filePath;
-        }
-                }
-                // DownloadsProvider
-                else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
-    
-                    final String id = DocumentsContract.getDocumentId(uri);
-                    final Uri contentUri = ContentUris.withAppendedId(
-                            Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-    
-                    return getDataColumn(context, contentUri, null, null);
-                }
-                // MediaProvider
-                else if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
-                    final String docId = DocumentsContract.getDocumentId(uri);
-                    final String[] split = docId.split(":");
-                    final String type = split[0];
-    
-                    Uri contentUri = null;
-                    if ("image".equals(type)) {
-                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                    } else if ("video".equals(type)) {
-                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                    } else if ("audio".equals(type)) {
-                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                    }
-    
-                    final String selection = "_id=?";
-                    final String[] selectionArgs = new String[]{
-                            split[1]
-                    };
-    
-                       Cursor cursor = null;
-                       final String column = "_data";
-                       final String[] projection = {
-                          column
-                        };
-       
-            try {
-                cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                        null);
-                if (cursor != null && cursor.moveToFirst()) {
-                    final int column_index = cursor.getColumnIndexOrThrow(column);
-                    return cursor.getString(column_index);
-                }
-            } finally {
-                if (cursor != null)
-                    cursor.close();
-            }
-            return null;
-                }
-            }
-            // MediaStore (and general)
-            else if ("content".equalsIgnoreCase(uri.getScheme())) {
-                return getDataColumn(context, uri, null, null);
-            }
-            // File
-            else if ("file".equalsIgnoreCase(uri.getScheme())) {
-                return uri.getPath();
-            }
-    
-            return null;
-        }
-
-    private static String getDataColumn(Context context, Uri uri, String selection,
-                                     String[] selectionArgs) {
-    
-            Cursor cursor = null;
-            final String column = "_data";
-            final String[] projection = {
-                    column
-            };
-    
-            try {
-                cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                        null);
-                if (cursor != null && cursor.moveToFirst()) {
-                    final int column_index = cursor.getColumnIndexOrThrow(column);
-                    return cursor.getString(column_index);
-                }
-            } finally {
-                if (cursor != null)
-                    cursor.close();
-            }
-            return null;
-        }
 
     public static FileInfo openFileStream(final Context context, final Uri uri, boolean withData) {
 
@@ -244,7 +128,7 @@ public class FileUtils {
         FileOutputStream fos = null;
         final FileInfo.Builder fileInfo = new FileInfo.Builder();
         final String fileName = FileUtils.getFileName(uri, context);
-        final String path = getFullPathFromContentUri(context, uri);
+        final String path = PathUtils.getPath(context, uri);
 
         final File file = new File(path);
 
