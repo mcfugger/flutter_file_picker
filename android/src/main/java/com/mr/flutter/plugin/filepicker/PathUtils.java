@@ -252,7 +252,7 @@ public class PathUtils {
                 return cursor.getString(column_index);
             }
         }  catch (Exception e) {
-            Timber.e(e);
+            //Removed Timber
         } finally {
             if (cursor != null)
                 cursor.close();
