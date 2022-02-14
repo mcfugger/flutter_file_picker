@@ -32,8 +32,6 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 
-import okhttp3.ResponseBody;
-
 public class PathUtils {
     public static final String DOCUMENTS_DIR = "documents";
     // configured android:authorities in AndroidManifest (https://developer.android.com/reference/android/support/v4/content/FileProvider)
