@@ -137,7 +137,10 @@ public class FileUtils {
 
         final File file = new File(path);
 
-
+        else if(!file.exists()){
+             Log.e(TAG, "Failed to retrieve path: " + path, null);
+            return null;
+        }
 
 //        if(!file.exists()) {
 //            file.getParentFile().mkdirs();
