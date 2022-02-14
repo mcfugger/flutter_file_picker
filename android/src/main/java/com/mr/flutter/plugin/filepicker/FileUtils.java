@@ -131,7 +131,7 @@ public class FileUtils {
         final String path = PathUtils.getPath(context, uri);
 
         if(path == null){
-            Log.e(TAG, "Failed to retrieve path: " + e.getMessage(), null);
+            Log.e(TAG, "Failed to retrieve path: null", null);
             return null;
         }
 
