@@ -755,6 +755,7 @@ public class PathUtils {
             outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         return file.getPath();
     }

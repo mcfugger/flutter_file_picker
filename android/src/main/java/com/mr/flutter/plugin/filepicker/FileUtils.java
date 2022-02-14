@@ -130,7 +130,14 @@ public class FileUtils {
         final String fileName = FileUtils.getFileName(uri, context);
         final String path = PathUtils.getPath(context, uri);
 
+        if(path == null){
+            Log.e(TAG, "Failed to retrieve path: " + e.getMessage(), null);
+            return null;
+        }
+
         final File file = new File(path);
+
+
 
 //        if(!file.exists()) {
 //            file.getParentFile().mkdirs();
